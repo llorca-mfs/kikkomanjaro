@@ -2,17 +2,17 @@
 
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const Gap default_gap        = {.isgap = 1, .realgap = 10, .gappx = 10};
+static const Gap default_gap        = {.isgap = 1, .realgap = 20, .gappx = 20};
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "monospace:size=15" };
-static const char dmenufont[]       = "monospace:size=15";
+static const char *fonts[]          = { "JetBrains Mono:size=12:antialias=true:autohint=true", "Baybayin Modern Mono:size=15:antialias=true:autohint=true"};
+static const char dmenufont[]       = "JetBrains Mono:size=12:antialias=true:autohint=true";
 static const char col_gray1[]       = "#282828";
 static const char col_gray2[]       = "#3c3836";
 static const char col_gray3[]       = "#ebdbb2";
 static const char col_gray4[]       = "#fdf1c7";
-static const char col_cyan[]        = "#d79921";
+static const char col_cyan[]        = "#98971a";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
@@ -20,7 +20,7 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "ᜁᜐ", "ᜇᜎᜏ", "ᜆᜆ᜴ ᜎᜓ", "ᜀᜉᜆ᜴", "ᜎᜒᜋ", "ᜀᜈᜒᜋ᜴", "ᜉᜒᜆᜓ", "ᜏᜎᜓ", "ᜐᜒᜌᜋ᜴" };
+static const char *tags[] = { "ᜁᜐ", "ᜇᜎᜏ", "ᜆᜆ᜔ᜎᜓ", "ᜀᜉᜆ᜔", "ᜎᜒᜋ", "ᜀᜈᜒᜋ᜔", "ᜉᜒᜆᜓ", "ᜏᜎᜓ", "ᜐᜒᜌᜋ᜔" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -59,51 +59,53 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", NULL };
-static const char *take_sc[]  = { "takeScreenshot", NULL };
-static const char *upvol[]   = { "amixer", "set", "Master", "3+",     NULL };
-static const char *downvol[] = { "amixer", "set", "Master", "3-",     NULL };
-static const char *mutevol[] = { "amixer", "set", "Master", "toggle", NULL };
+static const char *upvol[]   = { "amixer", "set", "Master", "1%+",     NULL };
+static const char *downvol[] = { "amixer", "set", "Master", "1%-",     NULL };
 
 static Key keys[] = {
-	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_f,      spawn,          {.v = dmenucmd } },
-	{ MODKEY,                       XK_t,      spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_p,      togglebar,      {0} },
-	{ MODKEY,                       XK_e,      focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_q,      focusstack,     {.i = -1 } },
-	{ MODKEY,                       XK_w,      incnmaster,     {.i = +1 } },
-	{ MODKEY,                       XK_s,      incnmaster,     {.i = -1 } },
-	{ MODKEY,                       XK_a,      setmfact,       {.f = -0.05} },
-	{ MODKEY,                       XK_d,      setmfact,       {.f = +0.05} },
-	{ MODKEY,                       XK_Tab, zoom,           {0} },
-	{ MODKEY,                       XK_Return,    view,           {0} },
-	{ MODKEY,                       XK_x,      killclient,     {0} },
-	{ MODKEY,                       XK_b,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_n,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_space,  setlayout,      {0} },
-	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
-	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
-	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
-	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-	{ MODKEY,                       XK_minus,  setgaps,        {.i = -5 } },
-	{ MODKEY,                       XK_equal,  setgaps,        {.i = +5 } },
-	{ MODKEY|ShiftMask,             XK_minus,  setgaps,        {.i = GAP_RESET } },
-	{ MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i = GAP_TOGGLE} },
-	TAGKEYS(                        XK_1,                      0)
-	TAGKEYS(                        XK_2,                      1)
-	TAGKEYS(                        XK_3,                      2)
-	TAGKEYS(                        XK_4,                      3)
-	TAGKEYS(                        XK_5,                      4)
-	TAGKEYS(                        XK_6,                      5)
-	TAGKEYS(                        XK_7,                      6)
-	TAGKEYS(                        XK_8,                      7)
-	TAGKEYS(                        XK_9,                      8)
-	{ MODKEY,                       XK_z,      spawn,      SHCMD("maim -s | xclip -selection clipboard -t image/png") },
-	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+	/* modifier             key    function        argument */
+	{ MODKEY,               41,    spawn,          {.v = dmenucmd } }, // f
+	{ MODKEY,     28,    spawn,          {.v = termcmd } }, // t
+	{ MODKEY,               32,      spawn,      SHCMD("pacmd set-default-sink 0") },
+	{ MODKEY,               33,      spawn,      SHCMD("pacmd set-default-sink 1") },
+	{ MODKEY,               26,    focusstack,     {.i = +1 } },      // e
+	{ MODKEY,               24,    focusstack,     {.i = -1 } },      // q
+	{ MODKEY,               25,    incnmaster,     {.i = +1 } },      // w
+	{ MODKEY,               39,    incnmaster,     {.i = -1 } },      // s
+	{ MODKEY,               38,    setmfact,       {.f = -0.05} },    // a
+	{ MODKEY,               40,    setmfact,       {.f = +0.05} },    // d
+	{ MODKEY,               36,    zoom,           {0} },             // Return
+	{ MODKEY,               23,    view,           {0} },             // Tab
+	{ MODKEY,               53,    killclient,     {0} },             // c
+	{ MODKEY,               56,    setlayout,      {.v = &layouts[0]} }, // b
+	{ MODKEY,               57,    setlayout,      {.v = &layouts[1]} }, // n
+	{ MODKEY,               58,    setlayout,      {.v = &layouts[2]} }, // m
+	{ MODKEY,               65,    setlayout,      {0} },             // space
+	{ MODKEY|ShiftMask,     65,    togglefloating, {0} },             // space
+	{ MODKEY,               19,    view,           {.ui = ~0 } },     // 0
+	{ MODKEY|ShiftMask,     19,    tag,            {.ui = ~0 } },     // 0
+	{ MODKEY,               59,    focusmon,       {.i = -1 } },      // comma
+	{ MODKEY,               60,    focusmon,       {.i = +1 } },      // period
+	{ MODKEY|ShiftMask,     59,    tagmon,         {.i = -1 } },      // comma
+	{ MODKEY|ShiftMask,     60,    tagmon,         {.i = +1 } },      // period
+	{ MODKEY,                       20,  setgaps,        {.i = -5 } },
+	{ MODKEY,                       21,  setgaps,        {.i = +5 } },
+	{ MODKEY|ShiftMask,             20,  setgaps,        {.i = GAP_RESET } },
+	{ MODKEY|ShiftMask,             21,  setgaps,        {.i = GAP_TOGGLE} },
+	TAGKEYS(                10,                    0)                 // 1
+	TAGKEYS(                11,                    1)                 // 2
+	TAGKEYS(                12,                    2)                 // 3
+	TAGKEYS(                13,                    3)                 // 4
+	TAGKEYS(                14,                    4)                 // 5
+	TAGKEYS(                15,                    5)                 // 6
+	TAGKEYS(                16,                    6)                 // 7
+	TAGKEYS(                17,                    7)                 // 8
+	TAGKEYS(                18,                    8)                 // 9
+	{ 0,                       122, spawn, {.v = downvol } },
+	{ 0,                       123, spawn, {.v = upvol   } },
+	{ 0,                       107,      spawn,      SHCMD("maim -s | xclip -selection clipboard -t image/png") },
+	{ MODKEY,                  107,      spawn,      SHCMD("maim -s ~/Pictures/$(date +maim-%m%d%Y-%I%M%S).png | xclip -selection") },
+	{ MODKEY|ShiftMask,     24,    quit,           {0} },             // x
 };
 
 /* button definitions */
