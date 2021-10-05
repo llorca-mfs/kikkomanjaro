@@ -1,12 +1,21 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx  = 1;        /* border pixel of windows */
+static const unsigned int borderpx  = 2;        /* border pixel of windows */
 static const Gap default_gap        = {.isgap = 1, .realgap = 20, .gappx = 20};
 static const unsigned int snap      = 32;       /* snap pixel */
+static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
+static const unsigned int systrayonleft = 0;   	/* 0: systray in the right corner, >0: systray on left of status text */
+static const unsigned int systrayspacing = 2;   /* systray spacing */
+static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
+static const int showsystray        = 1;     /* 0 means no systray */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "JetBrains Mono:size=12:antialias=true:autohint=true", "Baybayin Modern Mono:size=15:antialias=true:autohint=true"};
+static const char *fonts[]          = { "JetBrains Mono:size=12:antialias=true:autohint=true",
+										"Baybayin Modern Mono:size=15:antialias=true:autohint=true",
+										"Font Awesome 5 Free:size=10:antialias=true:autohint=true:style=Solid",
+										"Font Awesome 5 Brands:size=10:antialias=true:autohint=true:style=Regular",
+										"Source Han Sans JP:size=12:antialias=true:autohint=true:style=Medium"};
 static const char dmenufont[]       = "JetBrains Mono:size=12:antialias=true:autohint=true";
 static const char col_gray1[]       = "#282828";
 static const char col_gray2[]       = "#3c3836";
@@ -20,7 +29,7 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "ᜁᜐ", "ᜇᜎᜏ", "ᜆᜆ᜔ᜎᜓ", "ᜀᜉᜆ᜔", "ᜎᜒᜋ", "ᜀᜈᜒᜋ᜔", "ᜉᜒᜆᜓ", "ᜏᜎᜓ", "ᜐᜒᜌᜋ᜔" };
+static const char *tags[] = { "ᜁᜐ", "ᜇᜎᜏ", "ᜆᜆ᜔ᜎᜓ", "ᜀᜉᜆ᜔"};
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -29,6 +38,8 @@ static const Rule rules[] = {
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
+	{ "ProtonVPN",     NULL,       NULL,       0,            1,           -1 },
+	{ "Pomotroid",     NULL,       NULL,       0,            1,           -1 },
 	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
 };
 
@@ -59,23 +70,26 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", NULL };
-static const char *upvol[]   = { "amixer", "set", "Master", "1%+",     NULL };
-static const char *downvol[] = { "amixer", "set", "Master", "1%-",     NULL };
+//static const char *upvol[]   = { "amixer", "set", "Master", "3%+",     NULL };
+//static const char *downvol[] = { "amixer", "set", "Master", "3%-",     NULL };
+static const char *upvol[]   = { "volume", "up",     NULL };
+static const char *downvol[] = { "volume", "down",     NULL };
+static const char *medplaypausecmd[] = { "playerctl", "-p", "spotify", "play-pause", NULL };
+static const char *mednextcmd[] = { "playerctl", "-p", "spotify", "next", NULL };
+static const char *medprevcmd[] = { "playerctl", "-p", "spotify", "previous", NULL };
 
 static Key keys[] = {
 	/* modifier             key    function        argument */
 	{ MODKEY,               41,    spawn,          {.v = dmenucmd } }, // f
 	{ MODKEY,     28,    spawn,          {.v = termcmd } }, // t
-	{ MODKEY,               32,      spawn,      SHCMD("pacmd set-default-sink 0") },
-	{ MODKEY,               33,      spawn,      SHCMD("pacmd set-default-sink 1") },
 	{ MODKEY,               26,    focusstack,     {.i = +1 } },      // e
 	{ MODKEY,               24,    focusstack,     {.i = -1 } },      // q
 	{ MODKEY,               25,    incnmaster,     {.i = +1 } },      // w
 	{ MODKEY,               39,    incnmaster,     {.i = -1 } },      // s
 	{ MODKEY,               38,    setmfact,       {.f = -0.05} },    // a
 	{ MODKEY,               40,    setmfact,       {.f = +0.05} },    // d
-	{ MODKEY,               36,    zoom,           {0} },             // Return
-	{ MODKEY,               23,    view,           {0} },             // Tab
+	{ MODKEY,               23,    zoom,           {0} },             // Tab
+	{ MODKEY,               36,    view,           {0} },             // Return
 	{ MODKEY,               53,    killclient,     {0} },             // c
 	{ MODKEY,               56,    setlayout,      {.v = &layouts[0]} }, // b
 	{ MODKEY,               57,    setlayout,      {.v = &layouts[1]} }, // n
@@ -96,14 +110,14 @@ static Key keys[] = {
 	TAGKEYS(                11,                    1)                 // 2
 	TAGKEYS(                12,                    2)                 // 3
 	TAGKEYS(                13,                    3)                 // 4
-	TAGKEYS(                14,                    4)                 // 5
-	TAGKEYS(                15,                    5)                 // 6
-	TAGKEYS(                16,                    6)                 // 7
-	TAGKEYS(                17,                    7)                 // 8
-	TAGKEYS(                18,                    8)                 // 9
-	{ 0,                       122, spawn, {.v = downvol } },
-	{ 0,                       123, spawn, {.v = upvol   } },
-	{ 0,                       107,      spawn,      SHCMD("maim -s | xclip -selection clipboard -t image/png") },
+	{ MODKEY,               32,      toggleSoundOutput,      {0} }, //o
+	{ MODKEY,               33,      switchPlayer,      {.i = +1} }, //p
+	{ MODKEY,               44,      playerMediaControl,      {.i = 0} }, //j
+	{ MODKEY,               45,      playerMediaControl,      {.i = 1} }, //k
+	{ MODKEY,               46,      playerMediaControl,      {.i = 2} }, //l
+	{ 0,                       122, spawn, SHCMD("cd ~/.dwm/volume-notify/ && ./volume down")  }, //vol down
+	{ 0,                       123, spawn, SHCMD("cd ~/.dwm/volume-notify/ && ./volume up") }, //vol up
+	{ 0,                       107,      spawn,      SHCMD("maim -s | xclip -selection clipboard -t image/png") }, // prntscrn
 	{ MODKEY,                  107,      spawn,      SHCMD("maim -s ~/Pictures/$(date +maim-%m%d%Y-%I%M%S).png | xclip -selection") },
 	{ MODKEY|ShiftMask,     24,    quit,           {0} },             // x
 };
