@@ -10,3 +10,4 @@ stuff I use for my manjaro rice :P
 - xidlehook
 - dunst
 - picom
+- ttf-font-awesome
