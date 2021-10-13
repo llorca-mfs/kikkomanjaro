@@ -11,3 +11,4 @@ stuff I use for my manjaro rice :P
 - dunst
 - picom
 - ttf-font-awesome
+- faba-icon-theme
