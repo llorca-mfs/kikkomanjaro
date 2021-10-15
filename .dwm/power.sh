@@ -1,7 +1,7 @@
-chosen=$(echo -e "Lock\nLogout\nShutdown\nReboot\nSuspend\nHibernate" | dmenu -i)
+chosen=$(echo -e "Lock\nLogout\nShutdown\nReboot\nSuspend\nHibernate" | dmenu -i -l 6 -p "What do you want to do?")
 
 if [[ $chosen = "Lock" ]]; then
-	lock
+	/home/makorino/.dwm/lock
 elif [[ $chosen = "Logout" ]]; then
 	pkill dwm
 elif [[ $chosen = "Shutdown" ]]; then
