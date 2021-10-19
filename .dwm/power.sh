@@ -1,4 +1,4 @@
-chosen=$(echo -e "Lock\nLogout\nShutdown\nReboot\nSuspend\nHibernate" | dmenu -i -l 6 -p "What do you want to do?")
+chosen=$(echo -e "Lock\nLogout\nShutdown\nReboot\nSuspend\nHibernate" | dmenu -i -l 6 -p "ᜀᜈᜓᜅ᜔ ᜈᜁᜐ᜔ ᜋᜓᜅ᜔ ᜄᜏᜒᜈ᜔?")
 
 if [[ $chosen = "Lock" ]]; then
 	/home/makorino/.dwm/lock
